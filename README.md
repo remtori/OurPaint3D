@@ -1,4 +1,4 @@
-# Tetris
+# Our Paint 3D
 
 ## Generate project
 
@@ -7,6 +7,8 @@
 ```
 vendor\windows\premake5.exe vs2019
 ```
+
+Thay `2019` bằng phiên bản bạn dùng
 
 ### Linux
 
