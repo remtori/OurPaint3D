@@ -3,7 +3,11 @@
 
 #include "Renderer/Renderer.h"
 
-Application::Application(const char* title, uint32_t screenWidth, uint32_t screenHeight)
+#include <imgui.h>
+#include <examples/imgui_impl_glfw.h>
+#include <examples/imgui_impl_opengl3.h>
+
+Application::Application(const char* title, float screenWidth, float screenHeight)
 {
 	m_Data = WindowData{
 		this, title,
@@ -80,7 +84,7 @@ Application::Application(const char* title, uint32_t screenWidth, uint32_t scree
 			}
 	});
 
-    glfwMakeContextCurrent(m_Window);
+    glfwMakeContextCurrent(m_Window);	
 
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
     {
@@ -91,18 +95,35 @@ Application::Application(const char* title, uint32_t screenWidth, uint32_t scree
 	LOG_INFO("OpenGL Version: {0}", glGetString(GL_VERSION));
 	LOG_INFO("GLSL Version: {0}", glGetString(GL_SHADING_LANGUAGE_VERSION));
 	LOG_INFO("Renderer: {0}", glGetString(GL_RENDERER));
-
+	
     glfwSwapInterval(1);
+
+	// ImGui Init
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+	ImGui::StyleColorsDark();
+	ImGui::GetStyle().WindowRounding = 0.0f;
+
+	ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
+	ImGui_ImplOpenGL3_Init("#version 330");
 
     Renderer::Init();
 }
 
 Application::~Application()
 {
+	// ImGui Shutdown
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+
     Renderer::Shutdown();
 
     glfwDestroyWindow(m_Window);
-
     glfwTerminate();
 }
 
@@ -111,18 +132,27 @@ void Application::Run()
     double currTime;
     double lastTime = 0;
     glfwSetTime(lastTime);
+	glfwMaximizeWindow(m_Window);
 
     while (!glfwWindowShouldClose(m_Window))
     {
+		glfwPollEvents();
+
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
 
         currTime = glfwGetTime();
         OnUpdate(currTime - lastTime);
         lastTime = currTime;
 
-        glfwSwapBuffers(m_Window);
-        glfwPollEvents();
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());		
+
+        glfwSwapBuffers(m_Window);        
     }
 }
 

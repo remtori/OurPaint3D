@@ -10,11 +10,11 @@ enum KeyState {
 
 class Application {
 public:
-    Application(const char* title, uint32_t screenWidth, uint32_t screenHeight);
+    Application(const char* title, float screenWidth = 640, float screenHeight = 360);
     virtual ~Application();
 
     void Run();
-public:
+protected:
     virtual void OnUpdate(double deltaTime) = 0;
 
 	virtual void OnResize(int width, int height);
@@ -36,7 +36,7 @@ protected:
 	{
 		Application* App;
 		const char* Title;
-		uint32_t Width, Height;
+		float Width, Height;
 	};
 	WindowData m_Data;
 };

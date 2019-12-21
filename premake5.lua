@@ -19,7 +19,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["GLFW"] = "OurPaint3D/vendor/GLFW/include"
 IncludeDir["glad"] = "OurPaint3D/vendor/glad/include"
-IncludeDir["imgui"] = "Hazel/vendor/imgui"
+IncludeDir["imgui"] = "OurPaint3D/vendor/imgui"
 IncludeDir["glm"] = "OurPaint3D/vendor/glm"
 IncludeDir["stb_image"] = "OurPaint3D/vendor/stb_image"
 
@@ -43,6 +43,11 @@ project "OurPaint3D"
 
 	pchheader "pch.h"
 	pchsource "OurPaint3D/src/pch.cpp"
+
+	defines
+	{
+		"_CRT_SECURE_NO_WARNINGS"
+	}
 
 	files
 	{
