@@ -16,6 +16,7 @@ public:
     void Run();
 protected:
     virtual void OnUpdate(double deltaTime) = 0;
+	virtual void OnImGuiRender() = 0;
 
 	virtual void OnResize(int width, int height);
 
@@ -38,5 +39,5 @@ protected:
 		const char* Title;
 		float Width, Height;
 	};
-	WindowData m_Data;
+	WindowData m_WinInfo;
 };

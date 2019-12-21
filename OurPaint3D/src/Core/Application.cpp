@@ -9,7 +9,7 @@
 
 Application::Application(const char* title, float screenWidth, float screenHeight)
 {
-	m_Data = WindowData{
+	m_WinInfo = WindowData{
 		this, title,
 		screenWidth, screenHeight
 	};
@@ -33,7 +33,7 @@ Application::Application(const char* title, float screenWidth, float screenHeigh
         exit(EXIT_FAILURE);
     }
 
-	glfwSetWindowUserPointer(m_Window, &m_Data);
+	glfwSetWindowUserPointer(m_Window, &m_WinInfo);
 
 	glfwSetFramebufferSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
 	{
@@ -139,16 +139,16 @@ void Application::Run()
 		glfwPollEvents();
 
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
+        glClear(GL_COLOR_BUFFER_BIT);		
 
         currTime = glfwGetTime();
         OnUpdate(currTime - lastTime);
         lastTime = currTime;
 
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+		OnImGuiRender();
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());		
 
@@ -184,7 +184,7 @@ std::pair<float, float> Application::GetMousePos()
 glm::vec2 Application::ConvertCoord(const glm::vec2& pos)
 {
 	return {
-		(2.0 * pos.x + 1.0) / m_Data.Width - 1.0,
-		(2.0 * pos.y + 1.0) / m_Data.Height - 1.0
+		(2.0 * pos.x + 1.0) / m_WinInfo.Width - 1.0,
+		(2.0 * pos.y + 1.0) / m_WinInfo.Height - 1.0
 	};
 }

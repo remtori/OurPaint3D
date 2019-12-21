@@ -11,6 +11,7 @@ public:
 	~OurPaint3D();
 
 	void OnUpdate(double dt) override;
+	void OnImGuiRender() override;
 private:
 	glm::vec3 m_Color;
 };
