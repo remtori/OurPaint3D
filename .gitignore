@@ -16,3 +16,6 @@ bin-int/
 Makefile
 
 imgui.ini
+
+# GLFW out dir
+out/
