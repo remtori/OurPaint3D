@@ -18,8 +18,9 @@ public:
     Texture(const std::string& path);
     ~Texture();
 
-    uint32_t GetWidth() const { return m_Width;  }
-    uint32_t GetHeight() const { return m_Height; }
+    inline uint32_t GetWidth() const { return m_Width;  }
+    inline uint32_t GetHeight() const { return m_Height; }
+    inline uint32_t GetInternalID() const { return m_TextureID; }
 
     void SetData(void* data, uint32_t size);
 

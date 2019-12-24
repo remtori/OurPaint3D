@@ -122,10 +122,11 @@ GLint Shader::GetUniformLocation(const std::string& name)
     if (it == m_UniformLocation.cend())
     {
         location = glGetUniformLocation(m_ProgramID, name.c_str());
+        LOG_TRACE("Uniform Location '{}' = {}", name, location);
         m_UniformLocation.insert({ name, location });
     }
     else
-        location = it->second;
+        location = it->second;    
 
     return location;
 }

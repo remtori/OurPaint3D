@@ -1,8 +1,11 @@
 #pragma once
 
-#include "Core/Application.h";
-
 #include <glm/glm.hpp>
+
+#include "Core/Application.h";
+#include "Renderer/Camera.h"
+#include "Renderer/Texture.h"
+#include "Renderer/Geometries/Geometry.h"
 
 class OurPaint3D : public Application
 {
@@ -12,6 +15,14 @@ public:
 
 	void OnUpdate(double dt) override;
 	void OnImGuiRender() override;
+protected:
+	void OnResize(int width, int height) override;
+
 private:
-	glm::vec3 m_Color;
+	Texture* m_Texture;
+	Camera* m_Camera;
+
+	// Camera options
+	float CamSpeed;
+	float CamSensitivity;
 };

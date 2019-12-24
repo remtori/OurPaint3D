@@ -27,7 +27,7 @@ Texture::Texture(uint32_t width, uint32_t height)
 Texture::Texture(const std::string& path)
 {
     int width, height, channels;
-    stbi_set_flip_vertically_on_load(1);
+    //stbi_set_flip_vertically_on_load(1);
     stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
 
     ASSERT(data, "Failed to load image!");

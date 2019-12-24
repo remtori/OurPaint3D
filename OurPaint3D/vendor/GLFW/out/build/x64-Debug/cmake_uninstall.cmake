@@ -1,9 +1,9 @@
 
-if (NOT EXISTS "D:/University/3/ComputerGraphics/Final/Windows/Tetris/vendor/GLFW/out/build/x64-Debug/install_manifest.txt")
-  message(FATAL_ERROR "Cannot find install manifest: \"D:/University/3/ComputerGraphics/Final/Windows/Tetris/vendor/GLFW/out/build/x64-Debug/install_manifest.txt\"")
+if (NOT EXISTS "D:/University/3/ComputerGraphics/Theory-Final/OurPaint3D/vendor/GLFW/out/build/x64-Debug/install_manifest.txt")
+  message(FATAL_ERROR "Cannot find install manifest: \"D:/University/3/ComputerGraphics/Theory-Final/OurPaint3D/vendor/GLFW/out/build/x64-Debug/install_manifest.txt\"")
 endif()
 
-file(READ "D:/University/3/ComputerGraphics/Final/Windows/Tetris/vendor/GLFW/out/build/x64-Debug/install_manifest.txt" files)
+file(READ "D:/University/3/ComputerGraphics/Theory-Final/OurPaint3D/vendor/GLFW/out/build/x64-Debug/install_manifest.txt" files)
 string(REGEX REPLACE "\n" ";" files "${files}")
 
 foreach (file ${files})

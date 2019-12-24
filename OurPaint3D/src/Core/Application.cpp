@@ -136,10 +136,7 @@ void Application::Run()
 
     while (!glfwWindowShouldClose(m_Window))
     {
-		glfwPollEvents();
-
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);		
+		glfwPollEvents();		
 
         currTime = glfwGetTime();
         OnUpdate(currTime - lastTime);
