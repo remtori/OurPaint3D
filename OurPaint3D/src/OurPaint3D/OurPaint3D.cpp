@@ -110,7 +110,9 @@ void OurPaint3D::OnUpdate(double dt)
 	static float lastY = 0;
 	if (IsMouseButtonPressed(GLFW_MOUSE_BUTTON_3))
 	{
-		auto [x, y] = GetMousePos();
+		auto pos = GetMousePos();
+		float x = pos.first;
+		float y = pos.second;
 
 		if (firstMouse)
 		{
