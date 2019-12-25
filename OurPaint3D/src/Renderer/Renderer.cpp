@@ -10,8 +10,24 @@ RendererData* Renderer::m_Data;
 void Renderer::Init()
 {
 	m_Data = new RendererData();
+	m_Data->objectTable = std::unordered_map<Geometry::EObject, std::pair<uint64_t, uint64_t>>();
+
 	m_Data->whiteTexture = Texture::Create(1, 1);	
-	m_Data->shader = Shader::Create("Geometry Shader",
+	uint32_t whiteTextureData = 0xffffffff;
+	m_Data->whiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
+
+	m_Data->rgbTexture = Texture::Create(2, 2);
+	uint32_t rgbTextureData[] = { 0xff0000ff, 0xff00ff00, 0xffff0000, 0xffffffff };
+	m_Data->rgbTexture->SetData(&rgbTextureData, sizeof(rgbTextureData));
+
+	glGenVertexArrays(1, &m_Data->VAO);
+	glBindVertexArray(m_Data->VAO);
+
+	glGenBuffers(1, &m_Data->vertexBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, m_Data->vertexBuffer);
+	glBufferData(GL_ARRAY_BUFFER, MAX_VERTICIES * sizeof(float) * 5, nullptr, GL_DYNAMIC_DRAW);
+
+	m_Data->geomShader = Shader::Create("Geometry Shader",
 		// Vertex shader
 		"#version 330 core\n"
 
@@ -23,6 +39,7 @@ void Renderer::Init()
 		"layout (location = 1) in vec2 UV;\n"
 
 		"out vec2 Frag_UV;\n"
+		"out vec3 Frag_Normal;\n"
 
 		"void main()\n"
 		"{\n"
@@ -44,66 +61,143 @@ void Renderer::Init()
 		"}\n"
 	);
 
-	m_Data->shader->Bind();
-	m_Data->shader->SetInt("Texture", 0);
+	m_Data->geomShader->Bind();
+	m_Data->geomShader->SetInt("Texture", 0);		
 
-	uint32_t whiteTextureData = 0xffffffff;
-	m_Data->whiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
-	
-	glGenVertexArrays(1, &m_Data->VAO);
-	glBindVertexArray(m_Data->VAO);
-
-	glGenBuffers(1, &m_Data->vertexBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, m_Data->vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, MAX_VERTICIES * sizeof(float) * 5, nullptr, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*) 0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*) (3 * sizeof(float)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	float x[] = { 
+		-5.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+	 	 5.0f,  0.0f,  0.0f,  0.0f, 0.0f
+	};
+	float y[] = {  
+		 0.0f, -5.0f,  0.0f,  0.5f, 0.0f,   
+	 	 0.0f,  5.0f,  0.0f,  0.5f, 0.0f 
+	};
+	float z[] = {  
+		 0.0f,  0.0f, -5.0f,  1.0f, 0.5f,   
+		 0.0f,  0.0f,  5.0f,  1.0f, 0.5f 
+	};
+	uint64_t s = sizeof(x);
+	
+	m_Data->offset = 0;
+	glBufferSubData(GL_ARRAY_BUFFER, m_Data->offset, s, x);
+	m_Data->offset += s;
+	glBufferSubData(GL_ARRAY_BUFFER, m_Data->offset, s, y);
+	m_Data->offset += s;
+	glBufferSubData(GL_ARRAY_BUFFER, m_Data->offset, s, z);
+	m_Data->offset += s;
+
+	m_Data->objectTable[Geometry::Origin] = { 0, 6 };
+
+	static int GRID_COUNT = 63;
+	static uint64_t GRID_SIZE = GRID_COUNT * 10 * 2;
+	float* grid = new float[GRID_SIZE];
+
+	for (int i = 0; i < GRID_COUNT * 10; i += 10)
+	{
+		grid[i + 0] = -GRID_COUNT / 2;
+		grid[i + 1] = 0.0f;
+		grid[i + 2] = i / 10 - GRID_COUNT / 2;
+		grid[i + 3] = 0.5f;
+		grid[i + 4] = 0.5f;
+
+		grid[i + 5] = GRID_COUNT / 2;
+		grid[i + 6] = 0.0f;
+		grid[i + 7] = i / 10 - GRID_COUNT / 2;
+		grid[i + 8] = 0.5f;
+		grid[i + 9] = 0.5f;
+
+		grid[GRID_COUNT * 10 + i + 0] = i / 10 - GRID_COUNT / 2;
+		grid[GRID_COUNT * 10 + i + 1] = 0.0f;
+		grid[GRID_COUNT * 10 + i + 2] = -GRID_COUNT / 2;
+		grid[GRID_COUNT * 10 + i + 3] = 0.5f;
+		grid[GRID_COUNT * 10 + i + 4] = 0.5f;
+
+		grid[GRID_COUNT * 10 + i + 5] = i /10 - GRID_COUNT / 2;
+		grid[GRID_COUNT * 10 + i + 6] = 0.0f;
+		grid[GRID_COUNT * 10 + i + 7] = GRID_COUNT / 2;
+		grid[GRID_COUNT * 10 + i + 8] = 0.5f;
+		grid[GRID_COUNT * 10 + i + 9] = 0.5f;
+	}
+
+	glBufferSubData(GL_ARRAY_BUFFER, m_Data->offset, GRID_SIZE * sizeof(float), grid);
+	m_Data->objectTable[Geometry::Grid] = { m_Data->offset / (5 * sizeof(float)), GRID_SIZE / 5 };
+	m_Data->offset += GRID_SIZE * sizeof(float);
+
+	delete grid;
 }
 
 void Renderer::Shutdown()
 {
-	delete m_Data->whiteTexture;
-	delete m_Data->shader;
 	delete m_Data;
 }
 
-void Renderer::Begin(Camera* cam)
+void Renderer::Begin(Camera* cam, bool drawCenter, bool drawGrid)
 {
-	m_Data->shader->Bind();	
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glActiveTexture(GL_TEXTURE0);
 	glBindVertexArray(m_Data->VAO);
 
-	m_Data->shader->SetMat4("projection", 
-		glm::perspective(glm::radians(45.0f), cam->aspect, 0.1f, 100.0f)
-	);
+	m_Data->geomShader->Bind();		
+	m_Data->geomShader->SetMat4("model", glm::mat4(1.0f));
+	m_Data->geomShader->SetMat4("view", cam->GetViewMatrix());
+	m_Data->geomShader->SetMat4("projection", cam->GetProjectionMatrix());
 
-	m_Data->shader->SetMat4("view", cam->GetViewMatrix());
+	m_Data->rgbTexture->Bind();
+	m_Data->geomShader->SetFloat4("Color", { 1.0f, 1.0f, 1.0f, 1.0f });
 
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	if (drawCenter)
+		glDrawArrays(GL_LINES, m_Data->objectTable[Geometry::Origin].first, m_Data->objectTable[Geometry::Origin].second);
+
+	if (drawGrid)
+		glDrawArrays(GL_LINES, m_Data->objectTable[Geometry::Grid].first, m_Data->objectTable[Geometry::Grid].second);
 }
 
 void Renderer::End()
 {
+	//GLenum err;
+	//while ((err = glGetError()) != GL_NO_ERROR)
+	//{
+	//	LOG_ERROR("OpenGL Error: {}", err);
+	//}
 }
 
-void Renderer::Render(Geometry* geom)
-{	
-	m_Data->shader->SetMat4("model", geom->transformationMatrix);
-	m_Data->shader->SetFloat4("Color", geom->color);
+void Renderer::Render(Geometry* geom, bool hightlight)
+{
+	m_Data->geomShader->SetMat4("model", geom->transformationMatrix);
+	m_Data->geomShader->SetFloat4("Color", geom->color);
 
 	if (geom->texture != nullptr)
 		geom->texture->Bind();
 	else
+		m_Data->rgbTexture->Bind();
+
+	if (m_Data->objectTable.find(geom->type) == m_Data->objectTable.cend())
+	{
+		auto v = geom->GetVerticies();
+		glBufferSubData(GL_ARRAY_BUFFER, m_Data->offset, v->size() * sizeof(float), v->data());
+		m_Data->objectTable[geom->type] = { m_Data->offset / (5 * sizeof(float)), v->size() / 5 };
+		m_Data->offset += v->size() * sizeof(float);
+		delete v;
+	}
+	
+	glDrawArrays(GL_TRIANGLES, m_Data->objectTable[geom->type].first, m_Data->objectTable[geom->type].second);
+
+	if (hightlight)
+	{
 		m_Data->whiteTexture->Bind();
-
-	glBufferSubData(GL_ARRAY_BUFFER, 0, geom->verticies.size() * sizeof(float), geom->verticies.data());
-
-	glDrawArrays(GL_TRIANGLES, 0, geom->verticies.size() / 5);
+		m_Data->geomShader->SetMat4("model", glm::scale(geom->transformationMatrix, { 1.01f, 1.01f, 1.01f }));
+		m_Data->geomShader->SetFloat4("Color", { 0.0f, 0.5f, 1.0f, 0.5f });
+		glDrawArrays(GL_TRIANGLES, m_Data->objectTable[geom->type].first, m_Data->objectTable[geom->type].second);
+	}
 }

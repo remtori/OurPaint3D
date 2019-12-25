@@ -4,7 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch) 
-    : Front(glm::vec3(0.0f, 0.0f, -1.0f)), aspect(1.0)
+    : Front(glm::vec3(0.0f, 0.0f, -1.0f)), aspectRatio(1.0), FOV(45.0f)
 {
     Position = position;
     WorldUp = up;
@@ -15,6 +15,11 @@ Camera::Camera(glm::vec3 position, glm::vec3 up, float yaw, float pitch)
 
 Camera::~Camera()
 {
+}
+
+glm::mat4 Camera::GetProjectionMatrix() const
+{
+    return glm::perspective(glm::radians(FOV), aspectRatio, 0.1f, 100.0f);
 }
 
 glm::mat4 Camera::GetViewMatrix() const

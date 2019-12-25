@@ -3,11 +3,12 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-Geometry::Geometry()
+Geometry::Geometry(EObject type, const char* inName)
 	: texture(nullptr), color(1.0f, 1.0f, 1.0f, 1.0f),
 	position(0.0f), rotation(0.0f), scale(1.0f),
-	transformationMatrix(1.0f)
+	transformationMatrix(1.0f), type(type)
 {
+	strcpy_s(name, inName);
 }
 
 void Geometry::ReCalcTransform()

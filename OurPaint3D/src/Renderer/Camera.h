@@ -4,8 +4,7 @@
 
 class Camera
 {
-public:
-	float aspect;
+public:	
 	glm::vec3 Position;
 	glm::vec3 Front;
 	glm::vec3 Up;
@@ -16,6 +15,10 @@ public:
 	float Yaw;
 	float Pitch;	
 
+	// Field of view
+	float FOV;
+	float aspectRatio;
+
 	Camera(
 		glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f),
 		glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f),
@@ -25,6 +28,7 @@ public:
 	~Camera();
 
 	glm::mat4 GetViewMatrix() const;	
+	glm::mat4 GetProjectionMatrix() const;
 	void ReCalc();
 };
 
