@@ -32,7 +32,7 @@ group ""
 
 project "OurPaint3D"
 	location "OurPaint3D"
-	kind "ConsoleApp"
+	kind "WindowedApp"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "on"
@@ -75,29 +75,10 @@ project "OurPaint3D"
 		"GLFW",
 		"glad",
 		"imgui",
+		"opengl32.lib",
 	}
 
-	filter "system:windows"
-		systemversion "latest"
-		links
-		{
-			"opengl32.lib",
-		}
-
-	filter "system:not windows"
-		links
-		{
-			"X11",
-			"Xrandr",
-			"Xinerama",
-			"Xi",
-			"Xxf86vm",
-			"Xcursor",
-			"dl",
-			"GL",
-			"m",
-			"pthread",
-		}
+	systemversion "latest"
 
 	filter "configurations:Debug"
 		defines "_DEBUG"

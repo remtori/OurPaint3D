@@ -81,7 +81,29 @@ void OurPaint3D::OnImGuiRender()
 		ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoMove |
 		ImGuiWindowFlags_NoBringToFrontOnFocus |
-		ImGuiWindowFlags_NoNavFocus;
+		ImGuiWindowFlags_NoNavFocus;	
+
+	static bool showUsage = true;
+	if (showUsage)
+		ImGui::OpenPopup("Basic Usage");
+
+	if (ImGui::BeginPopupModal("Basic Usage", &showUsage, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::Text(
+			"Use WASD to move around\n"
+			"Hold middle mouse button to look around\n"
+			"All numeric input can be change quicky by dragging\n"
+			"Have fun test thing out~ OurPaint3D\n"
+		);
+
+		if (ImGui::Button("OK", ImVec2(-1.0, 0)))
+		{
+			showUsage = false;
+			ImGui::CloseCurrentPopup();
+		}
+
+		ImGui::EndPopup();
+	}
 
 	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
 	ImGui::SetNextWindowSize(ImVec2(menuWidth, m_WinInfo.Height));
@@ -374,6 +396,7 @@ void OurPaint3D::HandleCamera(double dt)
 
 void OurPaint3D::OnResize(int width, int height)
 {
+	if (height == 0) return;
 	m_Camera->aspectRatio = (float)width / (float)height;
 	glViewport(0, 0, width, height);
 }
