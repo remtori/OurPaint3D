@@ -55,6 +55,8 @@ make
 
 Có vài bức ảnh ở trong mục ./OurPaint3D/assets để bạn thử gán texture.
 
-Theo mình thấy thì còn rất nhiều điều mình có thể tối ưu, nhiều tính năng mình có thể thực hiện (ví dụ: batch rendering, dùng chuột thao tác trên hình thay vì chỉnh sửa số, ...). Nhưng nếu cứ thế thì mình sẽ bị dính mãi vào một project này, vì vậy từ giờ project này sẽ chỉ cập nhập sửa lỗi (nếu có).
+Theo mình thấy thì còn rất nhiều điều mình có thể tối ưu, nhiều tính năng mình có thể thực hiện ở project này 
+(ví dụ: batch rendering, dùng chuột thao tác trên hình thay vì chỉnh sửa số, ...). 
+Nhưng nếu cứ thế thì mình sẽ bị dính mãi vào một project này, vì vậy từ giờ project này sẽ chỉ cập nhập sửa lỗi (nếu có).
 
-Đây là project hoàn chỉnh về OpenGL cũng như C++ được hoàn thành tới một mức độ khiến mình hài lòng, hi vọng nó không phải là cái duy nhất ^^
+Đây là project về OpenGL cũng như C++ đầu tiên được hoàn thành tới một mức độ khiến mình hài lòng, hi vọng nó không phải là cái duy nhất ^^
