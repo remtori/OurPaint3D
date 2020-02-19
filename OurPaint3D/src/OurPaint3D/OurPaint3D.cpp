@@ -4,7 +4,7 @@
 #include <imgui.h>
 #include <glm/gtc/type_ptr.hpp>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #include <Commdlg.h>
 #else
@@ -282,7 +282,7 @@ void OurPaint3D::OnImGuiRender()
 		if (ImGui::Button("Add Texture", ImVec2(w / 2, 0.0f)))
 		{
 			char filename[MAX_PATH];
-#ifdef WIN32
+#ifdef _WIN32
 			tagOFNA ofn;
 			ZeroMemory(&filename, sizeof(filename));
 			ZeroMemory(&ofn, sizeof(ofn));
