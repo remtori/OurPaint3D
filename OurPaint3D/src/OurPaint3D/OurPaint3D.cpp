@@ -29,7 +29,6 @@ OurPaint3D::OurPaint3D()
 
 	Texture* tex = Renderer::m_Data->rgbTexture;
 	m_Textures.push_back(tex);
-	m_Textures.push_back(Texture::Create("/home/remtori/dev/Playground/OurPaint3D/OurPaint3D/assets/earth.jpg"));
 
 	currentGeom = new Cube();
 	currentGeom->texture = tex;
@@ -190,7 +189,7 @@ void OurPaint3D::OnImGuiRender()
 			}
 
 			ImGui::SameLine();
-			ImGui::Text(geom->name);
+			ImGui::Text("%s", geom->name);
 			ImGui::SameLine(w);
 
 			if (ImGui::SmallButton("X"))
@@ -295,8 +294,13 @@ void OurPaint3D::OnImGuiRender()
 
 			GetOpenFileNameA(&ofn);
 #else
+			char* pos;
 			FILE *f = popen("zenity --file-selection --file-filter='Image File | *.png *.jpg *.jpeg *.bmp *.gif'", "r");
-			fscanf(f, "%s", filename);
+			fgets(filename, MAX_PATH, f);
+			if ((pos = strchr(filename, '\n')) != nullptr)
+				*pos = '\0';
+			else
+				LOG_ERROR("Input file path is too long for buffer !!!");
 #endif
 			Texture* tex = Texture::Create(filename);
 			currentGeom->texture = tex;
@@ -329,7 +333,7 @@ void OurPaint3D::OnImGuiRender()
 			}
 
 			ImGui::SameLine(4);
-			ImGui::Image((void*)texture->GetInternalID(), ImVec2(size.x - 8, size.y - 8));
+			ImGui::Image((void*)(size_t)texture->GetInternalID(), ImVec2(size.x - 8, size.y - 8));
 
 			ImGui::PopID();
 		}

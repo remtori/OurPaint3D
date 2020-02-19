@@ -11,6 +11,10 @@ Geometry::Geometry(EObject type, const char* inName)
 	strcpy(name, inName);
 }
 
+Geometry::~Geometry()
+{
+}
+
 void Geometry::ReCalcTransform()
 {
 	transformationMatrix =

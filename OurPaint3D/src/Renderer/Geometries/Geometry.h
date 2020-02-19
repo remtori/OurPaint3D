@@ -23,6 +23,7 @@ public:
 	glm::mat4 transformationMatrix;
 
 	Geometry(EObject type, const char* name = "Basic Geometry");
+	virtual ~Geometry();
 	void ReCalcTransform();
 
 	virtual std::vector<float>* GetVerticies() = 0;
