@@ -2,7 +2,7 @@
 
 #include "OurPaint3D/OurPaint3D.h"
 
-#ifdef WIN32
+#ifdef _WIN32
 int CALLBACK WinMain(
 	__in  HINSTANCE hInstance,
 	__in  HINSTANCE hPrevInstance,
