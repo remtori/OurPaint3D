@@ -2,9 +2,14 @@
 #include "OurPaint3D/OurPaint3D.h"
 
 #include <imgui.h>
+#include <glm/gtc/type_ptr.hpp>
+
+#ifdef WIN32
 #include <windows.h>
 #include <Commdlg.h>
-#include <glm/gtc/type_ptr.hpp>
+#else
+#define MAX_PATH 512
+#endif
 
 #include "Renderer/Renderer.h"
 #include "Renderer/Geometries/Geometries.h"
@@ -15,7 +20,7 @@ OurPaint3D::OurPaint3D()
 	IsCenterVisible(false), IsGridVisible(true), IsHightlightEnable(true),
 	CamSensitivity(1.0f), CamSpeed(2.0f),
 	menuWidth(254.0f)
-{	
+{
 	m_Camera = new Camera({ 6.0f, 6.0f, 6.0f });
 	m_Camera->aspectRatio = (float) m_WinInfo.Width / (float) m_WinInfo.Height;
 	m_Camera->Yaw = 225.0f;
@@ -24,6 +29,7 @@ OurPaint3D::OurPaint3D()
 
 	Texture* tex = Renderer::m_Data->rgbTexture;
 	m_Textures.push_back(tex);
+	m_Textures.push_back(Texture::Create("/home/remtori/dev/Playground/OurPaint3D/OurPaint3D/assets/earth.jpg"));
 
 	currentGeom = new Cube();
 	currentGeom->texture = tex;
@@ -58,11 +64,11 @@ OurPaint3D::~OurPaint3D()
 	for (Geometry* g : m_Geometries)
 		delete g;
 
-	delete m_Camera;	
+	delete m_Camera;
 }
 
 void OurPaint3D::OnUpdate(double dt)
-{	
+{
 	HandleCamera(dt);
 	Renderer::Begin(m_Camera, IsCenterVisible, IsGridVisible);
 	for (Geometry* geom : m_Geometries)
@@ -72,8 +78,8 @@ void OurPaint3D::OnUpdate(double dt)
 
 // TODO: Use dockspace to split the geometry selection and editing 50/50
 void OurPaint3D::OnImGuiRender()
-{			
-	static int menuWindowFlags = 
+{
+	static int menuWindowFlags =
 		//ImGuiWindowFlags_NoSavedSettings |
 		ImGuiWindowFlags_NoDocking |
 		ImGuiWindowFlags_NoTitleBar |
@@ -81,7 +87,7 @@ void OurPaint3D::OnImGuiRender()
 		ImGuiWindowFlags_NoResize |
 		ImGuiWindowFlags_NoMove |
 		ImGuiWindowFlags_NoBringToFrontOnFocus |
-		ImGuiWindowFlags_NoNavFocus;	
+		ImGuiWindowFlags_NoNavFocus;
 
 	static bool showUsage = true;
 	if (showUsage)
@@ -110,11 +116,11 @@ void OurPaint3D::OnImGuiRender()
 
 	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10.0f, 0.0f));
 	ImGui::Begin("LefttMenu", 0, menuWindowFlags);
-	
+
 	if (ImGui::CollapsingHeader("General Settings", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::Checkbox("Show World Center", &IsCenterVisible);		
-		ImGui::Checkbox("Show World Grid", &IsGridVisible);				
+		ImGui::Checkbox("Show World Center", &IsCenterVisible);
+		ImGui::Checkbox("Show World Grid", &IsGridVisible);
 		ImGui::Checkbox("Hightlight Selected Object", &IsHightlightEnable);
 
 		ImGui::Text("Menu Width");
@@ -133,7 +139,7 @@ void OurPaint3D::OnImGuiRender()
 		ImGui::DragFloat("##FOV", &m_Camera->FOV, 0.1, 0.0f, 180.0f);
 
 		ImGui::Text("(RX | RY) = (%.3f | %.3f)", m_Camera->Yaw, m_Camera->Pitch);
-		
+
 		ImGui::Text("");
 		ImGui::Text("Camera Settings");
 		ImGui::Separator();
@@ -144,8 +150,8 @@ void OurPaint3D::OnImGuiRender()
 
 		ImGui::Text("Sensitivity ");
 		ImGui::SameLine();
-		ImGui::DragFloat("##Sensitivity", &CamSensitivity, 0.05, 0.05, 3.0f);			
-	}	
+		ImGui::DragFloat("##Sensitivity", &CamSensitivity, 0.05, 0.05, 3.0f);
+	}
 
 	if (ImGui::CollapsingHeader("Object List", ImGuiTreeNodeFlags_DefaultOpen))
 	{
@@ -168,7 +174,7 @@ void OurPaint3D::OnImGuiRender()
 		ImGui::Separator();
 
 		ImGui::BeginChild("TextureContainer");
-		
+
 		int id = 0;
 		for (Geometry* geom : m_Geometries)
 		{
@@ -220,7 +226,7 @@ void OurPaint3D::OnImGuiRender()
 		ImGui::Text("Choose Geometry");
 
 		void* prevGeom = currentGeom;
-		if (ImGui::Button("Cube", ImVec2(w, 0.0f))) currentGeom = new Cube(); 
+		if (ImGui::Button("Cube", ImVec2(w, 0.0f))) currentGeom = new Cube();
 		if (ImGui::Button("Prismatic", ImVec2(w, 0.0f))) currentGeom = new Prismatic();
 		if (ImGui::Button("Pyramid", ImVec2(w, 0.0f))) currentGeom = new Pyramid();
 		if (ImGui::Button("Sphere", ImVec2(w, 0.0f))) currentGeom = new Sphere();
@@ -235,15 +241,15 @@ void OurPaint3D::OnImGuiRender()
 		ImGui::EndPopup();
 	}
 	ImGui::End();
-	
+
 
 	ImGui::SetNextWindowPos(ImVec2(m_WinInfo.Width - menuWidth, 0.0f));
-	ImGui::SetNextWindowSize(ImVec2(menuWidth, m_WinInfo.Height));	
+	ImGui::SetNextWindowSize(ImVec2(menuWidth, m_WinInfo.Height));
 	ImGui::Begin("RightMenu", 0, menuWindowFlags);
-	ImGui::PopStyleVar();		
-	
+	ImGui::PopStyleVar();
+
 	if (ImGui::CollapsingHeader("Object Properties", ImGuiTreeNodeFlags_DefaultOpen) && currentGeom != nullptr)
-	{		
+	{
 		ImGui::Text("Name     ");
 		ImGui::SameLine();
 		ImGui::InputText("##edit name", currentGeom->name, 128);
@@ -263,11 +269,11 @@ void OurPaint3D::OnImGuiRender()
 
 		ImGui::Text("Rotation ");
 		ImGui::SameLine();
-		needReCalc |= ImGui::DragFloat3("##Rotation", glm::value_ptr(currentGeom->rotation), 1.0f, -180.0f, 180.0f);		
+		needReCalc |= ImGui::DragFloat3("##Rotation", glm::value_ptr(currentGeom->rotation), 1.0f, -180.0f, 180.0f);
 
 		if (needReCalc)
 			currentGeom->ReCalcTransform();
-	}		
+	}
 
 	if (ImGui::CollapsingHeader("Textures", ImGuiTreeNodeFlags_DefaultOpen))
 	{
@@ -276,7 +282,7 @@ void OurPaint3D::OnImGuiRender()
 		if (ImGui::Button("Add Texture", ImVec2(w / 2, 0.0f)))
 		{
 			char filename[MAX_PATH];
-
+#ifdef WIN32
 			tagOFNA ofn;
 			ZeroMemory(&filename, sizeof(filename));
 			ZeroMemory(&ofn, sizeof(ofn));
@@ -288,8 +294,11 @@ void OurPaint3D::OnImGuiRender()
 			ofn.Flags = OFN_DONTADDTORECENT | OFN_FILEMUSTEXIST;
 
 			GetOpenFileNameA(&ofn);
-
-			Texture* tex = Texture::Create(ofn.lpstrFile);
+#else
+			FILE *f = popen("zenity --file-selection --file-filter='Image File | *.png *.jpg *.jpeg *.bmp *.gif'", "r");
+			fscanf(f, "%s", filename);
+#endif
+			Texture* tex = Texture::Create(filename);
 			currentGeom->texture = tex;
 			m_Textures.push_back(tex);
 		}
@@ -303,7 +312,7 @@ void OurPaint3D::OnImGuiRender()
 
 		ImGui::BeginChild("TextureContainer");
 
-		int i = 0;		
+		int i = 0;
 		ImGui::PushStyleVar(ImGuiStyleVar_SelectableTextAlign, ImVec2(0.5, 0.5));
 
 		for (Texture* texture : m_Textures)
@@ -352,7 +361,7 @@ void OurPaint3D::HandleCamera(double dt)
 		m_Camera->Position += m_Camera->Up * velocity;
 
 	if (IsKeyPressed(GLFW_KEY_LEFT_SHIFT))
-		m_Camera->Position -= m_Camera->Up * velocity;	
+		m_Camera->Position -= m_Camera->Up * velocity;
 
 	static bool firstMouse = true;
 	static float lastX = 0;
@@ -381,7 +390,7 @@ void OurPaint3D::HandleCamera(double dt)
 		m_Camera->Yaw += xoffset;
 		m_Camera->Pitch += yoffset;
 
-		// Make sure that when pitch is out of bounds, screen doesn't get flipped		
+		// Make sure that when pitch is out of bounds, screen doesn't get flipped
 		if (m_Camera->Pitch > 89.0f) m_Camera->Pitch = 89.0f;
 		if (m_Camera->Pitch < -89.0f) m_Camera->Pitch = -89.0f;
 

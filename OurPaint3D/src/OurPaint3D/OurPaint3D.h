@@ -3,7 +3,7 @@
 #include <vector>
 #include <glm/glm.hpp>
 
-#include "Core/Application.h";
+#include "Core/Application.h"
 #include "Renderer/Camera.h"
 #include "Renderer/Texture.h"
 #include "Renderer/Geometries/Geometry.h"
@@ -23,7 +23,7 @@ private:
 	std::vector<Texture*> m_Textures;
 	std::vector<Geometry*> m_Geometries;
 	Geometry* currentGeom;
-	Camera* m_Camera;	
+	Camera* m_Camera;
 private:
 	// Camera options
 	float CamSpeed;

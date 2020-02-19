@@ -75,10 +75,28 @@ project "OurPaint3D"
 		"GLFW",
 		"glad",
 		"imgui",
-		"opengl32.lib",
 	}
 
 	systemversion "latest"
+
+	filter "system:windows"
+		links
+		{
+			"opengl32.lib",
+		}
+
+	filter "system:not windows"
+		links
+		{
+			"X11",
+			"GL",
+			"dl",
+			"pthread",
+			"m",
+			"z",
+			"Xext",
+			"Xfixes",
+		}
 
 	filter "configurations:Debug"
 		defines "_DEBUG"

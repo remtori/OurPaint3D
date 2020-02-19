@@ -12,7 +12,7 @@ void Renderer::Init()
 	m_Data = new RendererData();
 	m_Data->objectTable = std::unordered_map<Geometry::EObject, std::pair<uint64_t, uint64_t>>();
 
-	m_Data->whiteTexture = Texture::Create(1, 1);	
+	m_Data->whiteTexture = Texture::Create(1, 1);
 	uint32_t whiteTextureData = 0xffffffff;
 	m_Data->whiteTexture->SetData(&whiteTextureData, sizeof(uint32_t));
 
@@ -33,7 +33,7 @@ void Renderer::Init()
 
 		"uniform mat4 model;\n"
 		"uniform mat4 view;\n"
-		"uniform mat4 projection;\n"		
+		"uniform mat4 projection;\n"
 
 		"layout (location = 0) in vec3 Position;\n"
 		"layout (location = 1) in vec2 UV;\n"
@@ -62,7 +62,7 @@ void Renderer::Init()
 	);
 
 	m_Data->geomShader->Bind();
-	m_Data->geomShader->SetInt("Texture", 0);		
+	m_Data->geomShader->SetInt("Texture", 0);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (void*)0);
 	glEnableVertexAttribArray(0);
@@ -74,20 +74,20 @@ void Renderer::Init()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	float x[] = { 
+	float x[] = {
 		-5.0f,  0.0f,  0.0f,  0.0f, 0.0f,
 	 	 5.0f,  0.0f,  0.0f,  0.0f, 0.0f
 	};
-	float y[] = {  
-		 0.0f, -5.0f,  0.0f,  0.5f, 0.0f,   
-	 	 0.0f,  5.0f,  0.0f,  0.5f, 0.0f 
+	float y[] = {
+		 0.0f, -5.0f,  0.0f,  0.5f, 0.0f,
+	 	 0.0f,  5.0f,  0.0f,  0.5f, 0.0f
 	};
-	float z[] = {  
-		 0.0f,  0.0f, -5.0f,  1.0f, 0.5f,   
-		 0.0f,  0.0f,  5.0f,  1.0f, 0.5f 
+	float z[] = {
+		 0.0f,  0.0f, -5.0f,  1.0f, 0.5f,
+		 0.0f,  0.0f,  5.0f,  1.0f, 0.5f
 	};
 	uint64_t s = sizeof(x);
-	
+
 	m_Data->offset = 0;
 	glBufferSubData(GL_ARRAY_BUFFER, m_Data->offset, s, x);
 	m_Data->offset += s;
@@ -133,7 +133,7 @@ void Renderer::Init()
 	m_Data->objectTable[Geometry::Grid] = { m_Data->offset / (5 * sizeof(float)), GRID_SIZE / 5 };
 	m_Data->offset += GRID_SIZE * sizeof(float);
 
-	delete grid;
+	delete[] grid;
 }
 
 void Renderer::Shutdown()
@@ -148,7 +148,7 @@ void Renderer::Begin(Camera* cam, bool drawCenter, bool drawGrid)
 	glActiveTexture(GL_TEXTURE0);
 	glBindVertexArray(m_Data->VAO);
 
-	m_Data->geomShader->Bind();		
+	m_Data->geomShader->Bind();
 	m_Data->geomShader->SetMat4("model", glm::mat4(1.0f));
 	m_Data->geomShader->SetMat4("view", cam->GetViewMatrix());
 	m_Data->geomShader->SetMat4("projection", cam->GetProjectionMatrix());
@@ -190,7 +190,7 @@ void Renderer::Render(Geometry* geom, bool hightlight)
 		m_Data->offset += v->size() * sizeof(float);
 		delete v;
 	}
-	
+
 	glDrawArrays(GL_TRIANGLES, m_Data->objectTable[geom->type].first, m_Data->objectTable[geom->type].second);
 
 	if (hightlight)

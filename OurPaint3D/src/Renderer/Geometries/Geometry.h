@@ -5,7 +5,7 @@
 #include "Renderer/Texture.h"
 
 class Geometry
-{	
+{
 public:
 	enum EObject {
 		Origin, Grid,
